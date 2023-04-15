@@ -1,0 +1,16 @@
+name: Build and test
+
+on: [push, pull_request]
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Build and test
+        run: |
+          cargo build --verbose
+          cargo test --verbose
