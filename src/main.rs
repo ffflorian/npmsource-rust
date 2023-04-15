@@ -1,5 +1,7 @@
 #[macro_use] extern crate rocket;
 use rocket::serde::{Serialize, json::Json};
+use rocket::response::Redirect;
+use rocket::http::Status;
 use regex::Regex;
 
 #[derive(Serialize)]
@@ -18,8 +20,8 @@ struct RawResult {
 }
 
 #[get("/_health")]
-fn route_health() -> String {
-  format!("OK")
+fn route_health() -> Status {
+  Status::Ok
 }
 
 #[get("/_info")]
@@ -47,7 +49,18 @@ fn route_scoped_package_name(scope: &str, package_name: &str) -> Json<RawResult>
   route_package_name(&format!("{}/{}", scope, package_name).to_string())
 }
 
+#[get("/")]
+fn route_default() -> Redirect {
+  Redirect::temporary("https://github.com/ffflorian/npmsource-rust")
+}
+
 #[launch]
 fn rocket() -> _ {
-  rocket::build().mount("/", routes![route_health, route_info, route_package_name, route_scoped_package_name])
+  rocket::build().mount("/", routes![
+    route_health,
+    route_info,
+    route_package_name,
+    route_scoped_package_name,
+    route_default
+  ])
 }
